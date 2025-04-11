@@ -14,9 +14,7 @@ const RecipeCard = ({ recipe }) => {
       />
 
       {/* Title */}
-      <h2 className="text-xl font-semibold text-black mb-2">
-        {recipe.title}
-      </h2>
+      <h2 className="text-xl font-semibold text-black mb-2">{recipe.title}</h2>
 
       {/* Used Ingredients */}
       <div className="text-sm text-emerald-500  mb-1">

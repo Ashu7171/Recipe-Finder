@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import RecipeCard from "../components/RecipeCard"; // Import the updated RecipeCard
 import Loader from "../components/Loader"; // Assuming you already have the Loader component
+import NutritionCard from "../components/NutritionCard";
 
 const NutriSearch = () => {
   const [protein, setProtein] = useState({ min: "", max: "" });
@@ -38,7 +38,9 @@ const NutriSearch = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">Search Recipes by Nutrients</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Search Recipes by Nutrients
+      </h1>
 
       {/* Protein Input Fields */}
       <div className="flex gap-2 mb-6">
@@ -75,7 +77,9 @@ const NutriSearch = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {recipes.length > 0 ? (
-            recipes.map((recipe) => <RecipeCard key={recipe.id} recipe={recipe} />)
+            recipes.map((recipe) => (
+              <NutritionCard key={recipe.id} recipe={recipe} />
+            ))
           ) : (
             <p className="text-center text-gray-500">No recipes found.</p>
           )}

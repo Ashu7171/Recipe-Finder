@@ -1,31 +1,30 @@
-import React, { useState } from 'react';
-import RecipeCard from '../components/RecipeCard';
-import Loader from '../components/Loader';
-
+import React, { useState } from "react";
+import RecipeCard from "../components/RecipeCard";
+import Loader from "../components/Loader";
 
 const IngSearch = () => {
-  const [ingredients, setIngredients] = useState('');
+  const [ingredients, setIngredients] = useState("");
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const API_KEY = import.meta.env.VITE_API_KEY;
 
   const handleSearch = async () => {
     if (!ingredients.trim()) {
-      setError('Please enter at least one ingredient.');
+      setError("Please enter at least one ingredient.");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const response = await fetch(
         `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients}&number=12&apiKey=${API_KEY}`
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong while fetching recipes.');
+        throw new Error("Something went wrong while fetching recipes.");
       }
 
       const data = await response.json();
@@ -39,7 +38,9 @@ const IngSearch = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">Search Recipes by Ingredients</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">
+        Search Recipes by Ingredients
+      </h1>
       <div className="flex gap-2 mb-6">
         <input
           type="text"
