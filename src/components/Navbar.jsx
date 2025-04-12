@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { GiKnifeFork } from 'react-icons/gi'; // Importing a knife and fork icon
+import React from "react";
+import { Link } from "react-router-dom";
+import { GiKnifeFork } from "react-icons/gi"; // Importing a knife and fork icon
 
 const Navbar = () => {
   return (

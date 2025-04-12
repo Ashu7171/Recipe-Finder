@@ -28,6 +28,7 @@ const IngSearch = () => {
       }
 
       const data = await response.json();
+      console.log("receipe data:", data);
       setRecipes(data);
     } catch (err) {
       setError(err.message);
@@ -48,6 +49,11 @@ const IngSearch = () => {
           className="flex-1 p-2 border rounded"
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
         />
         <button
           onClick={handleSearch}
