@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Loader from "../components/Loader"; // Assuming you already have the Loader component
+import Loader from "../components/Loader";
 import NutritionCard from "../components/NutritionCard";
 
 const NutriSearch = () => {
@@ -22,11 +22,7 @@ const NutriSearch = () => {
       const response = await fetch(
         `https://api.spoonacular.com/recipes/findByNutrients?minProtein=${protein.min}&maxProtein=${protein.max}&number=12&apiKey=${API_KEY}`
       );
-
-      if (!response.ok) {
-        throw new Error("Something went wrong while fetching recipes.");
-      }
-
+      if (!response.ok) throw new Error("Something went wrong while fetching recipes.");
       const data = await response.json();
       setRecipes(data);
     } catch (err) {
@@ -37,39 +33,39 @@ const NutriSearch = () => {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Search Recipes by Nutrients
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-purple-700">
+        Search Recipes by Protein Range
       </h1>
 
-      {/* Protein Input Fields */}
-      <div className="flex gap-2 mb-6">
+      {/* Input fields */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-6">
         <input
           type="number"
           placeholder="Min Protein"
-          className="flex-1 p-2 border rounded"
+          className="w-full sm:w-48 p-2 border rounded-md text-sm"
           value={protein.min}
           onChange={(e) => setProtein({ ...protein, min: e.target.value })}
         />
         <input
           type="number"
           placeholder="Max Protein"
-          className="flex-1 p-2 border rounded"
+          className="w-full sm:w-48 p-2 border rounded-md text-sm"
           value={protein.max}
           onChange={(e) => setProtein({ ...protein, max: e.target.value })}
         />
         <button
           onClick={handleSearch}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm"
         >
           Search
         </button>
       </div>
 
       {/* Error message */}
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-      {/* Loader or recipe cards */}
+      {/* Recipes or loader */}
       {loading ? (
         <div className="flex justify-center">
           <Loader />
