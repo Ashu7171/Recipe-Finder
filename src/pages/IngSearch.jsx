@@ -66,7 +66,7 @@ const IngSearch = () => {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       {loading ? (
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center h-[80vh]">
           <Loader />
         </div>
       ) : (

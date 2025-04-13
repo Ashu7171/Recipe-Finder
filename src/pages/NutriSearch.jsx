@@ -67,7 +67,7 @@ const NutriSearch = () => {
 
       {/* Recipes or loader */}
       {loading ? (
-        <div className="flex justify-center">
+        <div className="flex items-center justify-center h-[80vh]">
           <Loader />
         </div>
       ) : (
