@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Loader from "../components/Loader"; // ✅ Make sure the path is correct
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -25,8 +26,17 @@ const RecipeDetail = () => {
     fetchRecipe();
   }, [id]);
 
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
-  if (!recipe) return <div className="p-6 text-center">Recipe not found.</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[80vh]">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!recipe) {
+    return <div className="p-6 text-center">Recipe not found.</div>;
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
