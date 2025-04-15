@@ -3,7 +3,7 @@ import React from "react";
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null; // Don't render if only one page
 
-  const handlePageClick = (page) => {
+  const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       onPageChange(page);
       window.scrollTo({ top: 0, behavior: "smooth" });
