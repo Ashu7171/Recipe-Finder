@@ -9,7 +9,6 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center w-full">
 
-      {/* 🎥 Hero Video Section */}
       <div className="relative w-full overflow-hidden">
         <video
           className="w-full object-cover"
