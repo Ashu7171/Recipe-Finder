@@ -92,7 +92,6 @@ spec:
                             --username admin \
                             --password Changeme@2025 \
                             --tls-verify=false
-
                     '''
                 }
             }
