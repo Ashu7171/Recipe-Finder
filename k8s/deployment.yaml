@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: recipe-finder
-        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401199/recipe-finder:v1
+        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
         ports:
         - containerPort: 80
         env:
