@@ -24,7 +24,7 @@ spec:
     securityContext:
     runAsUser: 0
     readOnlyRootFilesystem: false
-    
+
     env:
     - name: KUBECONFIG
       value: /kube/config
@@ -103,8 +103,8 @@ spec:
             steps {
                 container('dind') {
                     sh '''
-                        docker tag recipe-finder:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401199/recipe-finder:v1
-                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401199/recipe-finder:v1
+                        docker tag recipe-finder:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
                     '''
                 }
             }
@@ -119,10 +119,10 @@ spec:
                         ls -la k8s
                         kubectl version
                         kubectl config view
-                        kubectl apply -f k8s/deployment.yaml -n 2401199
-                        kubectl apply -f k8s/service.yaml -n 2401199
-                        kubectl get all -n 2401199
-                        kubectl rollout status deployment/recipe-finder-deployment -n 2401199
+                        kubectl apply -f k8s/deployment.yaml -n 2401063
+                        kubectl apply -f k8s/service.yaml -n 2401063
+                        kubectl get all -n 2401063
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
                     '''
                 }
             }
@@ -133,10 +133,10 @@ spec:
                 container('kubectl') {
                     sh '''
                         echo "[DEBUG] Listing Pods..."
-                        kubectl get pods -n 2401199
+                        kubectl get pods -n 2401063
 
                         echo "[DEBUG] Describing Pods..."
-                        kubectl describe pods -n 2401199 | head -n 200
+                        kubectl describe pods -n 2401063 | head -n 200
                     '''
                 }
             }
