@@ -88,8 +88,11 @@ spec:
             steps {
                 container('dind') {
                     sh '''
-                        docker login http://nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
-                        -u admin -p Changeme@2025
+                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
+                            --username admin \
+                            --password Changeme@2025 \
+                            --tls-verify=false
+
                     '''
                 }
             }
