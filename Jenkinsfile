@@ -123,5 +123,20 @@ spec:
                 }
             }
         }
+
+        stage('Debug Pods') {
+            steps {
+                container('kubectl') {
+                    sh '''
+                        echo "[DEBUG] Listing Pods..."
+                        kubectl get pods -n 2401199
+
+                        echo "[DEBUG] Describing Pods..."
+                        kubectl describe pods -n 2401199 | head -n 200
+                    '''
+                }
+            }
+        }
+    
     }
 }
