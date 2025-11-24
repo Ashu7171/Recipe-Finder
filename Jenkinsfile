@@ -31,7 +31,7 @@ spec:
 
   - name: dind
     image: docker:dind
-    args: ["--storage-driver=overlay2"]
+    args: ["--storage-driver=overlay2", "--insecure-registry=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"]
     securityContext:
       privileged: true
     env:
@@ -87,12 +87,13 @@ spec:
         stage('Login to Nexus Registry') {
             steps {
                 container('dind') {
-                    sh 'docker --version'
-                    sh 'sleep 10'
-                    sh 'docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025'
+                    sh '''
+                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
+                    '''
                 }
             }
         }
+
 
         stage('Push to Nexus') {
             steps {
@@ -109,9 +110,14 @@ spec:
             steps {
                 container('kubectl') {
                     sh '''
-                        kubectl apply -f k8s/deployment.yaml
-                        kubectl apply -f k8s/service.yaml
-
+                        set -x
+                        ls -la
+                        ls -la k8s
+                        kubectl version
+                        kubectl config view
+                        kubectl apply -f k8s/deployment.yaml -n 2401199
+                        kubectl apply -f k8s/service.yaml -n 2401199
+                        kubectl get all -n 2401199
                         kubectl rollout status deployment/recipe-finder-deployment -n 2401199
                     '''
                 }
