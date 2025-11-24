@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "2401063"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,6 +18,8 @@ spec:
       labels:
         app: recipe-finder
     spec:
+      imagePullSecrets:
+        - name: nexus-secret
       containers:
       - name: recipe-finder
         image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
@@ -21,5 +28,17 @@ spec:
         env:
         - name: VITE_API_KEY
           value: "cc61bff714d14ffe98913e198a562acf"
-      imagePullSecrets:
-      - name: nexus-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recipe-finder-service
+  namespace: "2401063"
+spec:
+  selector:
+    app: recipe-finder
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
