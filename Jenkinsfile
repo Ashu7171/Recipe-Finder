@@ -74,7 +74,7 @@ spec:
                 container('sonar-scanner') {
                     sh '''
                         sonar-scanner \
-                            -Dsonar.projectKey=recipe_finder \
+                            -Dsonar.projectKey=2401063-ashutosh \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
                             -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
