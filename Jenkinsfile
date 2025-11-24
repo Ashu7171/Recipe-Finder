@@ -21,6 +21,10 @@ spec:
     image: bitnami/kubectl:latest
     command: ['cat']
     tty: true
+    securityContext:
+    runAsUser: 0
+    readOnlyRootFilesystem: false
+    
     env:
     - name: KUBECONFIG
       value: /kube/config

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recipe-finder-deployment
-  namespace: "2401199"
+  namespace: "2401063"
 spec:
   replicas: 1
   selector:
