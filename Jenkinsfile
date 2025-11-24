@@ -91,7 +91,7 @@ spec:
                         echo '{ "insecure-registries" : ["nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"] }' > /etc/docker/daemon.json
                         service docker restart
                         sleep 6
-                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
+                        docker login http://nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
                     '''
                 }
             }
