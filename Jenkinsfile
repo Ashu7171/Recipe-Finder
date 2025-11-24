@@ -113,18 +113,11 @@ spec:
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
-                    script {
-                        dir('k8s') {
-                            sh '''
-                                # Apply manifests
-                                kubectl apply -f deployment.yaml -n 2401063
-                                kubectl apply -f service.yaml -n 2401063
-
-                                # Rollout wait
-                                kubectl rollout status deployment/recipe-finder-deployment -n 2401063
-                            '''
-                        }
-                    }
+                    sh '''
+                        kubectl apply -f k8s/deployment.yaml -n 2401063
+                        kubectl get all -n 2401063
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                    '''
                 }
             }
         }
