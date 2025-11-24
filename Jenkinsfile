@@ -72,16 +72,17 @@ spec:
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
-                    withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=recipe_finder \
-                                -Dsonar.sources=.
-                        '''
-                    }
+                    sh '''
+                        sonar-scanner \
+                            -Dsonar.projectKey=recipe_finder \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
+                            -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
+                    '''
                 }
             }
         }
+
 
         stage('Login to Nexus Registry') {
             steps {
