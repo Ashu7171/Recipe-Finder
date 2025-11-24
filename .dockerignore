@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.git
+.gitignore
+Dockerfile
+Dockerfile.dev
+coverage*
+README.md
+*.md
+.env
