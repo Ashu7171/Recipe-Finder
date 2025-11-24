@@ -94,8 +94,6 @@ spec:
             }
         }
 
-
-
         stage('Push to Nexus') {
             steps {
                 container('dind') {
