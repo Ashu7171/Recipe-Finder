@@ -113,34 +113,21 @@ spec:
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
-                    sh '''
-                        set -x
-                        ls -la
-                        ls -la k8s
-                        kubectl version
-                        kubectl config view
-                        kubectl apply -f k8s/deployment.yaml -n 2401063
-                        kubectl apply -f k8s/service.yaml -n 2401063
-                        kubectl get all -n 2401063
-                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
-                    '''
+                    script {
+                        dir('k8s') {
+                            sh '''
+                                # Apply manifests
+                                kubectl apply -f deployment.yaml -n 2401063
+                                kubectl apply -f service.yaml -n 2401063
+
+                                # Rollout wait
+                                kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                            '''
+                        }
+                    }
                 }
             }
         }
-
-        stage('Debug Pods') {
-            steps {
-                container('kubectl') {
-                    sh '''
-                        echo "[DEBUG] Listing Pods..."
-                        kubectl get pods -n 2401063
-
-                        echo "[DEBUG] Describing Pods..."
-                        kubectl describe pods -n 2401063 | head -n 200
-                    '''
-                }
-            }
-        }
-    
+   
     }
 }
