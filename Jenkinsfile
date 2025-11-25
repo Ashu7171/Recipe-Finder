@@ -110,17 +110,17 @@ spec:
             }
         }
 
-        // stage('Deploy to Kubernetes') {
-        //     steps {
-        //         container('kubectl') {
-        //             sh '''
-        //                 kubectl apply -f k8s/deployment.yaml -n 2401063
-        //                 kubectl get all -n 2401063
-        //                 kubectl rollout status deployment/recipe-finder-deployment -n 2401063
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Deploy to Kubernetes') {
+            steps {
+                container('kubectl') {
+                    sh '''
+                        kubectl apply -f k8s/deployment.yaml -n 2401063
+                        kubectl get all -n 2401063
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                    '''
+                }
+            }
+        }
    
     }
 }
