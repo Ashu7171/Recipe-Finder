@@ -78,7 +78,7 @@ spec:
                 container('sonar-scanner') {
                     sh '''
                         sonar-scanner \
-                            -Dsonar.projectKey=2401063-ashutosh \
+                            -Dsonar.projectKey=find_my_recipe-ashutosh \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
                             -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
@@ -103,8 +103,8 @@ spec:
             steps {
                 container('dind') {
                     sh '''
-                        docker tag recipe-finder:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
-                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+                        docker tag recipe-finder:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/find_my_recipe/recipe-finder:v1
+                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/find_my_recipe/recipe-finder:v1
                     '''
                 }
             }
@@ -114,9 +114,9 @@ spec:
             steps {
                 container('kubectl') {
                     sh '''
-                        kubectl apply -f k8s/deployment.yaml -n 2401063
-                        kubectl get all -n 2401063
-                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                        kubectl apply -f k8s/deployment.yaml -n find_my_recipe
+                        kubectl get all -n find_my_recipe
+                        kubectl rollout status deployment/recipe-finder-deployment -n find_my_recipe
                     '''
                 }
             }
