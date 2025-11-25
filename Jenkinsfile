@@ -110,17 +110,37 @@ spec:
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Create Namespace') {
             steps {
                 container('kubectl') {
-                    sh '''
-                        kubectl apply -f k8s/deployment.yaml -n 2401063
-                        kubectl get all -n 2401063
-                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
-                    '''
+                    sh """
+                        echo '>>> Checking namespace...'
+                        kubectl get namespace 2401063 || kubectl create namespace 2401063
+
+                        echo '>>> Creating pull secret...'
+                        kubectl create secret docker-registry nexus-secret \
+                        --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
+                        --docker-username=admin \
+                        --docker-password=Changeme@2025 \
+                        --namespace=2401063 \
+                        --dry-run=client -o yaml | kubectl apply -f -
+                    """
                 }
             }
         }
-   
+
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                container('kubectl') {
+                    sh """
+                        kubectl apply -f k8s/deployment.yaml -n 2401063
+                        kubectl get pods -n 2401063
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                    """
+                }
+            }
+        }
+
     }
 }
