@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: "find_my_recipe"
+  name: "2401063"
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: recipe-finder-deployment
-  namespace: "find_my_recipe"
+  namespace: "2401063"
 spec:
   replicas: 1
   selector:
@@ -22,7 +22,7 @@ spec:
         - name: nexus-secret
       containers:
       - name: recipe-finder
-        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/find_my_recipe/recipe-finder:v1
+        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
         ports:
         - containerPort: 80
         env:
@@ -33,7 +33,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: recipe-finder-service
-  namespace: "find_my_recipe"
+  namespace: "2401063"
 spec:
   selector:
     app: recipe-finder
