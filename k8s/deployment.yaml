@@ -19,10 +19,10 @@ spec:
         app: recipe-finder
     spec:
       imagePullSecrets:
-        - name: nexus-secret
+      - name: nexus-secret
       containers:
       - name: recipe-finder
-        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+        image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:latest
         ports:
         - containerPort: 80
         env:
@@ -42,3 +42,22 @@ spec:
       port: 80
       targetPort: 80
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: recipe-finder-ingress
+  namespace: "2401063"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: 2401063.imcc.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: recipe-finder-service
+            port:
+              number: 80
