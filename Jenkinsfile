@@ -7,28 +7,19 @@ kind: Pod
 spec:
   containers:
 
-  # ---------------------------
-  # Node container
-  # ---------------------------
   - name: node
     image: node:18
-    command: ['cat']
+    command: ["cat"]
     tty: true
 
-  # ---------------------------
-  # Sonar-Scanner
-  # ---------------------------
   - name: sonar-scanner
     image: sonarsource/sonar-scanner-cli
-    command: ['cat']
+    command: ["cat"]
     tty: true
 
-  # ---------------------------
-  # Kubectl
-  # ---------------------------
   - name: kubectl
     image: bitnami/kubectl:latest
-    command: ['cat']
+    command: ["cat"]
     tty: true
     securityContext:
       runAsUser: 0
@@ -41,9 +32,6 @@ spec:
         mountPath: /kube/config
         subPath: kubeconfig
 
-  # ---------------------------
-  # Docker-in-Docker (DinD)
-  # ---------------------------
   - name: dind
     image: docker:24.0-dind
     securityContext:
@@ -72,9 +60,6 @@ spec:
 
     stages {
 
-        # -------------------------------------------------------
-        # FRONTEND BUILD
-        # -------------------------------------------------------
         stage('Install + Build Frontend') {
             steps {
                 container('node') {
@@ -87,9 +72,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # BUILD DOCKER IMAGE
-        # -------------------------------------------------------
         stage('Build Docker Image') {
             steps {
                 container('dind') {
@@ -101,9 +83,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # SONARQUBE SCAN
-        # -------------------------------------------------------
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
@@ -118,9 +97,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # DOCKER LOGIN
-        # -------------------------------------------------------
         stage('Login to Nexus Registry') {
             steps {
                 container('dind') {
@@ -132,9 +108,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # PUSH IMAGE
-        # -------------------------------------------------------
         stage('Push to Nexus') {
             steps {
                 container('dind') {
@@ -149,22 +122,12 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # CREATE NAMESPACE + SECRET
-        # -------------------------------------------------------
         stage('Create Namespace') {
             steps {
                 container('kubectl') {
                     sh """
-<<<<<<< HEAD
-                        echo '>>> Checking namespace 2401063'
                         kubectl get namespace 2401063 || kubectl create namespace 2401063
 
-                        echo '>>> Creating Image Pull Secret'
-=======
-                        kubectl get namespace 2401063 || kubectl create namespace 2401063
-
->>>>>>> dd795f0dde7a19e075bf37e140e3153c26813d18
                         kubectl create secret docker-registry nexus-secret \
                           --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
                           --docker-username=admin \
@@ -176,12 +139,6 @@ spec:
             }
         }
 
-<<<<<<< HEAD
-        # -------------------------------------------------------
-        # APPLY DEPLOYMENT
-        # -------------------------------------------------------
-=======
->>>>>>> dd795f0dde7a19e075bf37e140e3153c26813d18
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
