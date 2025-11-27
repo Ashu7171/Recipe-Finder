@@ -156,10 +156,15 @@ spec:
             steps {
                 container('kubectl') {
                     sh """
+<<<<<<< HEAD
                         echo '>>> Checking namespace 2401063'
                         kubectl get namespace 2401063 || kubectl create namespace 2401063
 
                         echo '>>> Creating Image Pull Secret'
+=======
+                        kubectl get namespace 2401063 || kubectl create namespace 2401063
+
+>>>>>>> dd795f0dde7a19e075bf37e140e3153c26813d18
                         kubectl create secret docker-registry nexus-secret \
                           --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
                           --docker-username=admin \
@@ -171,9 +176,12 @@ spec:
             }
         }
 
+<<<<<<< HEAD
         # -------------------------------------------------------
         # APPLY DEPLOYMENT
         # -------------------------------------------------------
+=======
+>>>>>>> dd795f0dde7a19e075bf37e140e3153c26813d18
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
