@@ -7,128 +7,173 @@ kind: Pod
 spec:
   containers:
 
+  # ---------------------------
+  # Node container
+  # ---------------------------
   - name: node
     image: node:18
     command: ['cat']
     tty: true
 
+  # ---------------------------
+  # Sonar-Scanner
+  # ---------------------------
   - name: sonar-scanner
     image: sonarsource/sonar-scanner-cli
     command: ['cat']
     tty: true
 
+  # ---------------------------
+  # Kubectl
+  # ---------------------------
   - name: kubectl
     image: bitnami/kubectl:latest
     command: ['cat']
     tty: true
     securityContext:
-    runAsUser: 0
-    readOnlyRootFilesystem: false
-
+      runAsUser: 0
+      readOnlyRootFilesystem: false
     env:
-    - name: KUBECONFIG
-      value: /kube/config
+      - name: KUBECONFIG
+        value: /kube/config
     volumeMounts:
-    - name: kubeconfig-secret
-      mountPath: /kube/config
-      subPath: kubeconfig
+      - name: kubeconfig-secret
+        mountPath: /kube/config
+        subPath: kubeconfig
 
+  # ---------------------------
+  # Docker-in-Docker (DinD)
+  # ---------------------------
   - name: dind
-    image: docker:dind
-    args: ["--storage-driver=overlay2", "--insecure-registry=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"]
+    image: docker:24.0-dind
     securityContext:
       privileged: true
+    args:
+      - "--storage-driver=overlay2"
+      - "--insecure-registry=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
     env:
-    - name: DOCKER_TLS_CERTDIR
-      value: ""
+      - name: DOCKER_TLS_CERTDIR
+        value: ""
+    volumeMounts:
+      - name: docker-storage
+        mountPath: /var/lib/docker
+
   volumes:
-  - name: kubeconfig-secret
-    secret:
-      secretName: kubeconfig-secret
+    - name: kubeconfig-secret
+      secret:
+        secretName: kubeconfig-secret
+
+    - name: docker-storage
+      emptyDir: {}
+
 '''
         }
     }
 
     stages {
 
+        # -------------------------------------------------------
+        # FRONTEND BUILD
+        # -------------------------------------------------------
         stage('Install + Build Frontend') {
             steps {
                 container('node') {
                     sh '''
                         npm install
                         npm run build
-                        npm audit fix
+                        npm audit fix || true
                     '''
                 }
             }
         }
 
+        # -------------------------------------------------------
+        # BUILD DOCKER IMAGE
+        # -------------------------------------------------------
         stage('Build Docker Image') {
             steps {
                 container('dind') {
                     sh '''
-                        sleep 10
+                        sleep 8
                         docker build -t recipe-finder:latest .
                     '''
                 }
             }
         }
 
+        # -------------------------------------------------------
+        # SONARQUBE SCAN
+        # -------------------------------------------------------
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
                     sh '''
                         sonar-scanner \
-                            -Dsonar.projectKey=2401063-ashutosh \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
-                            -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
+                          -Dsonar.projectKey=2401063-ashutosh \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
+                          -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
                     '''
                 }
             }
         }
 
+        # -------------------------------------------------------
+        # DOCKER LOGIN
+        # -------------------------------------------------------
         stage('Login to Nexus Registry') {
             steps {
                 container('dind') {
                     sh '''
-                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
+                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
+                          -u admin -p Changeme@2025
                     '''
                 }
             }
         }
 
+        # -------------------------------------------------------
+        # PUSH IMAGE
+        # -------------------------------------------------------
         stage('Push to Nexus') {
             steps {
                 container('dind') {
                     sh '''
-                        docker tag recipe-finder:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
-                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+                        docker tag recipe-finder:latest \
+                          nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+
+                        docker push \
+                          nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
                     '''
                 }
             }
         }
 
+        # -------------------------------------------------------
+        # CREATE NAMESPACE + SECRET
+        # -------------------------------------------------------
         stage('Create Namespace') {
             steps {
                 container('kubectl') {
                     sh """
-                        echo '>>> Checking namespace...'
+                        echo '>>> Checking namespace 2401063'
                         kubectl get namespace 2401063 || kubectl create namespace 2401063
 
-                        echo '>>> Creating Pull Secret in namespace...'
+                        echo '>>> Creating Image Pull Secret'
                         kubectl create secret docker-registry nexus-secret \
-                        --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
-                        --docker-username=admin \
-                        --docker-password=Changeme@2025 \
-                        --namespace=2401063 \
-                        --dry-run=client -o yaml | kubectl apply -f -
+                          --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
+                          --docker-username=admin \
+                          --docker-password=Changeme@2025 \
+                          --namespace=2401063 \
+                          --dry-run=client -o yaml | kubectl apply -f -
                     """
                 }
             }
         }
 
-
+        # -------------------------------------------------------
+        # APPLY DEPLOYMENT
+        # -------------------------------------------------------
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
