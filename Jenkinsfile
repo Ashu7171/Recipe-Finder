@@ -72,9 +72,6 @@ spec:
 
     stages {
 
-        # -------------------------------------------------------
-        # FRONTEND BUILD
-        # -------------------------------------------------------
         stage('Install + Build Frontend') {
             steps {
                 container('node') {
@@ -87,9 +84,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # BUILD DOCKER IMAGE
-        # -------------------------------------------------------
         stage('Build Docker Image') {
             steps {
                 container('dind') {
@@ -101,9 +95,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # SONARQUBE SCAN
-        # -------------------------------------------------------
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
@@ -118,9 +109,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # DOCKER LOGIN
-        # -------------------------------------------------------
         stage('Login to Nexus Registry') {
             steps {
                 container('dind') {
@@ -132,9 +120,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # PUSH IMAGE
-        # -------------------------------------------------------
         stage('Push to Nexus') {
             steps {
                 container('dind') {
@@ -149,17 +134,12 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # CREATE NAMESPACE + SECRET
-        # -------------------------------------------------------
         stage('Create Namespace') {
             steps {
                 container('kubectl') {
                     sh """
-                        echo '>>> Checking namespace 2401063'
                         kubectl get namespace 2401063 || kubectl create namespace 2401063
 
-                        echo '>>> Creating Image Pull Secret'
                         kubectl create secret docker-registry nexus-secret \
                           --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
                           --docker-username=admin \
@@ -171,9 +151,6 @@ spec:
             }
         }
 
-        # -------------------------------------------------------
-        # APPLY DEPLOYMENT
-        # -------------------------------------------------------
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
