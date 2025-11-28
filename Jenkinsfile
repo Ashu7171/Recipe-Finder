@@ -122,23 +122,6 @@ spec:
             }
         }
 
-        stage('Create Namespace') {
-            steps {
-                container('kubectl') {
-                    sh """
-                        kubectl get namespace 2401063 || kubectl create namespace 2401063
-
-                        kubectl create secret docker-registry nexus-secret \
-                          --docker-server=nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
-                          --docker-username=admin \
-                          --docker-password=Changeme@2025 \
-                          --namespace=2401063 \
-                          --dry-run=client -o yaml | kubectl apply -f -
-                    """
-                }
-            }
-        }
-
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
