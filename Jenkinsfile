@@ -61,7 +61,7 @@ spec:
     environment {
         REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
         IMAGE    = "2401063/recipe-finder"
-        VERSION  = "v2"   // 🔥 ALWAYS UPDATE VERSION FOR NEW DEPLOYMENT
+        VERSION  = "v3"  // 🔥 UPDATE VERSION EACH DEPLOYMENT
     }
 
     stages {
@@ -71,17 +71,16 @@ spec:
             steps {
                 container('node') {
                     sh '''
-
+                        echo "Injecting API Key for Vite build..."
                         export VITE_API_KEY="cc61bff714d14ffe98913e198a562acf"
-                        echo "Building with API key: $VITE_API_KEY"
-                        
+
                         echo "Installing dependencies..."
                         npm install
 
                         echo "Building Vite project..."
-                        npm run build
+                        VITE_API_KEY=$VITE_API_KEY npm run build
 
-                        echo "Fixing audit issues..."
+                        echo "Audit fixes..."
                         npm audit fix || true
                     '''
                 }
@@ -99,8 +98,8 @@ spec:
                         echo "Docker version:"
                         docker version
 
-                        echo "Building Docker image..."
-                        docker build -t $IMAGE:$VERSION .
+                        echo "Building Docker image WITHOUT CACHE..."
+                        docker build --no-cache -t $IMAGE:$VERSION .
                     '''
                 }
             }
@@ -126,7 +125,7 @@ spec:
             steps {
                 container('dind') {
                     sh '''
-                        echo "Logging in to Nexus registry..."
+                        echo "Logging into Nexus..."
                         docker login $REGISTRY -u admin -p Changeme@2025
                     '''
                 }
@@ -138,15 +137,9 @@ spec:
             steps {
                 container('dind') {
                     sh '''
-                        echo "Tagging image for Nexus..."
+                        echo "Tagging and pushing image..."
                         docker tag $IMAGE:$VERSION $REGISTRY/$IMAGE:$VERSION
-
-                        echo "Pushing image..."
-                        docker push $REGISTRY/$IMAGE:$VERSION || {
-                            echo "Retrying push..."
-                            sleep 5
-                            docker push $REGISTRY/$IMAGE:$VERSION
-                        }
+                        docker push $REGISTRY/$IMAGE:$VERSION
                     '''
                 }
             }
@@ -157,10 +150,10 @@ spec:
             steps {
                 container('kubectl') {
                     sh """
-                        echo "Deploying to Kubernetes namespace 2401063..."
-                        kubectl apply -f k8s/deployment.yaml -n 2401063
+                        echo "Updating Kubernetes deployment..."
+                        kubectl set image deployment/recipe-finder-deployment recipe-finder=$REGISTRY/$IMAGE:$VERSION -n 2401063
 
-                        echo "Checking deployment status..."
+                        echo "Waiting for rollout..."
                         kubectl rollout status deployment/recipe-finder-deployment -n 2401063
                     """
                 }
