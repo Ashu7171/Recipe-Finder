@@ -1,5 +1,6 @@
 # -------------------------------
-# PersistentVolumeClaim
+# DO NOT USE PVC FOR STATIC FILES
+# Keeping PVC here but not using it
 # -------------------------------
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -32,7 +33,7 @@ spec:
         - name: nexus-secret
       containers:
         - name: recipe-finder
-          image: 127.0.0.1:30085/2401063/recipe-finder:v1
+          image: 127.0.0.1:30085/2401063/recipe-finder:v2
           imagePullPolicy: Always
 
           ports:
@@ -44,21 +45,22 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: 80
-            initialDelaySeconds: 10
+            initialDelaySeconds: 5
             periodSeconds: 10
 
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 30
+            initialDelaySeconds: 20
+            periodSeconds: 20
 
-          volumeMounts:
-            - name: recipe-static
-              mountPath: /usr/share/nginx/html
+          # ❌ REMOVE THIS
+          # volumeMounts:
+          #   - name: recipe-static
+          #     mountPath: /usr/share/nginx/html
 
           resources:
             requests:
@@ -68,10 +70,11 @@ spec:
               cpu: "500m"
               memory: "512Mi"
 
-      volumes:
-        - name: recipe-static
-          persistentVolumeClaim:
-            claimName: recipe-static-pvc
+      # ❌ REMOVE THIS
+      # volumes:
+      #   - name: recipe-static
+      #     persistentVolumeClaim:
+      #       claimName: recipe-static-pvc
 ---
 apiVersion: v1
 kind: Service
