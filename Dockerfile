@@ -1,4 +1,6 @@
+# ----------------------------------
 # Stage 1 - Build Vite App
+# ----------------------------------
 FROM mirror.gcr.io/node:18 AS builder
 
 WORKDIR /app
@@ -9,15 +11,19 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-
+# ----------------------------------
 # Stage 2 - Run via nginx
+# ----------------------------------
 FROM mirror.gcr.io/nginx:stable-alpine
 
-# remove default nginx html
+# Remove default nginx html
 RUN rm -rf /usr/share/nginx/html/*
 
-# copy build output
+# Copy Vite build output
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy custom nginx config (important)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
