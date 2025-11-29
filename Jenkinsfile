@@ -153,8 +153,7 @@ spec:
                         echo "Updating Kubernetes deployment..."
                         kubectl set image deployment/recipe-finder-deployment recipe-finder=$REGISTRY/$IMAGE:$VERSION -n 2401063
 
-                        echo "Waiting for rollout..."
-                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
+                       
                     """
                 }
             }
