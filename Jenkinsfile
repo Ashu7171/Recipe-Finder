@@ -58,31 +58,51 @@ spec:
         }
     }
 
+    environment {
+        REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
+        IMAGE    = "2401063/recipe-finder"
+        VERSION  = "v2"   // 🔥 ALWAYS UPDATE VERSION FOR NEW DEPLOYMENT
+    }
+
     stages {
 
+        /* ------------------------- FRONTEND BUILD ------------------------- */
         stage('Install + Build Frontend') {
             steps {
                 container('node') {
                     sh '''
+                        echo "Installing dependencies..."
                         npm install
+
+                        echo "Building Vite project..."
                         npm run build
+
+                        echo "Fixing audit issues..."
                         npm audit fix || true
                     '''
                 }
             }
         }
 
+        /* ------------------------- DOCKER BUILD --------------------------- */
         stage('Build Docker Image') {
             steps {
                 container('dind') {
                     sh '''
-                        sleep 8
-                        docker build -t recipe-finder:latest .
+                        echo "Waiting for Docker daemon..."
+                        sleep 10
+
+                        echo "Docker version:"
+                        docker version
+
+                        echo "Building Docker image..."
+                        docker build -t $IMAGE:$VERSION .
                     '''
                 }
             }
         }
 
+        /* ------------------------- SONARQUBE ------------------------------ */
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
@@ -97,37 +117,47 @@ spec:
             }
         }
 
+        /* ---------------------- DOCKER LOGIN ------------------------------ */
         stage('Login to Nexus Registry') {
             steps {
                 container('dind') {
                     sh '''
-                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 \
-                          -u admin -p Changeme@2025
+                        echo "Logging in to Nexus registry..."
+                        docker login $REGISTRY -u admin -p Changeme@2025
                     '''
                 }
             }
         }
 
+        /* ---------------------- PUSH IMAGE ------------------------------- */
         stage('Push to Nexus') {
             steps {
                 container('dind') {
                     sh '''
-                        docker tag recipe-finder:latest \
-                          nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+                        echo "Tagging image for Nexus..."
+                        docker tag $IMAGE:$VERSION $REGISTRY/$IMAGE:$VERSION
 
-                        docker push \
-                          nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401063/recipe-finder:v1
+                        echo "Pushing image..."
+                        docker push $REGISTRY/$IMAGE:$VERSION || {
+                            echo "Retrying push..."
+                            sleep 5
+                            docker push $REGISTRY/$IMAGE:$VERSION
+                        }
                     '''
                 }
             }
         }
 
+        /* ---------------------- DEPLOY TO K8S ----------------------------- */
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
                     sh """
+                        echo "Deploying to Kubernetes namespace 2401063..."
                         kubectl apply -f k8s/deployment.yaml -n 2401063
-                       
+
+                        echo "Checking deployment status..."
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063
                     """
                 }
             }
