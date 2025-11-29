@@ -71,6 +71,10 @@ spec:
             steps {
                 container('node') {
                     sh '''
+
+                        export VITE_API_KEY="cc61bff714d14ffe98913e198a562acf"
+                        echo "Building with API key: $VITE_API_KEY"
+                        
                         echo "Installing dependencies..."
                         npm install
 
