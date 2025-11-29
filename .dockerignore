@@ -8,4 +8,6 @@ Dockerfile.dev
 coverage*
 README.md
 *.md
-.env
+.env.local
+.env.development
+.env.test
