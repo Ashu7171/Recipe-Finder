@@ -114,7 +114,7 @@ spec:
                           -Dsonar.projectKey=2401063-ashutosh \
                           -Dsonar.sources=. \
                           -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
-                          -Dsonar.login=sqp_fec0d2cd0d6849ed77e9d26ed8ae79e2a03b2844
+                          -Dsonar.login=sqp_2262df8f99de509600d563dcc48895aedaeb4c46
                     '''
                 }
             }
