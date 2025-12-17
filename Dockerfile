@@ -1,30 +1,21 @@
 # ----------------------------------
-# Stage 1 - Build Vite App
+# FINAL DOCKERFILE
+# Frontend already built in Jenkins
 # ----------------------------------
-FROM mirror.gcr.io/node:18 AS builder
 
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
-# ----------------------------------
-# Stage 2 - Run via nginx
-# ----------------------------------
 FROM mirror.gcr.io/nginx:stable-alpine
 
-# Remove default nginx html
+# Remove default nginx content
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy Vite build output
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy Vite build output from Jenkins workspace
+COPY dist/ /usr/share/nginx/html/
 
-# Copy custom nginx config (important)
+# Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Expose HTTP port
 EXPOSE 80
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
