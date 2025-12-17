@@ -72,7 +72,7 @@ spec:
             steps {
                 container('node') {
                     sh '''
-                        cd Recipe-Finder   # 🔥 THIS IS THE FIX
+                        echo "Building frontend at repo root"
                         export VITE_API_KEY=$VITE_API_KEY
                         npm install
                         npm run build
@@ -83,12 +83,12 @@ spec:
         }
 
 
+
         /* ------------------------- DOCKER BUILD --------------------------- */
         stage('Build Docker Image') {
             steps {
                 container('dind') {
                     sh '''
-                        cd Recipe-Finder   # 🔥 SAME DIRECTORY
                         echo "Waiting for Docker daemon..."
                         sleep 10
                         docker version
@@ -97,6 +97,7 @@ spec:
                 }
             }
         }
+
 
 
         /* ------------------------- SONARQUBE ------------------------------ */
