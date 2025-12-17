@@ -72,20 +72,15 @@ spec:
             steps {
                 container('node') {
                     sh '''
-                        echo "Injecting API Key for Vite build..."
-
-                        echo "Installing dependencies..."
+                        echo "Building with Spoonacular API key"
+                        export VITE_API_KEY=$VITE_API_KEY
                         npm install
-
-                        echo "Building Vite project..."
                         npm run build
-
-                        echo "Audit fixes..."
-                        npm audit fix || true
                     '''
                 }
             }
         }
+
 
         /* ------------------------- DOCKER BUILD --------------------------- */
         stage('Build Docker Image') {
@@ -99,7 +94,7 @@ spec:
                         docker version
 
                         echo "Building Docker image WITHOUT CACHE..."
-                        docker build --no-cache -t $IMAGE:$VERSION .
+                        docker build -t $IMAGE:$VERSION .
                     '''
                 }
             }
