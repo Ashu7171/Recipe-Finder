@@ -62,7 +62,7 @@ spec:
         VITE_API_KEY = credentials('SPOONACULAR_API_KEY')
         REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
         IMAGE    = "2401063/recipe-finder"
-        VERSION  = "v4"  // 🔥 UPDATE VERSION EACH DEPLOYMENT
+        VERSION  = "v5"  // 🔥 UPDATE VERSION EACH DEPLOYMENT
     }
 
     stages {
