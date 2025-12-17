@@ -72,10 +72,11 @@ spec:
             steps {
                 container('node') {
                     sh '''
-                        echo "Building with Spoonacular API key"
+                        cd Recipe-Finder   # 🔥 THIS IS THE FIX
                         export VITE_API_KEY=$VITE_API_KEY
                         npm install
                         npm run build
+                        ls -la
                     '''
                 }
             }
@@ -87,18 +88,16 @@ spec:
             steps {
                 container('dind') {
                     sh '''
+                        cd Recipe-Finder   # 🔥 SAME DIRECTORY
                         echo "Waiting for Docker daemon..."
                         sleep 10
-
-                        echo "Docker version:"
                         docker version
-
-                        echo "Building Docker image WITHOUT CACHE..."
                         docker build -t $IMAGE:$VERSION .
                     '''
                 }
             }
         }
+
 
         /* ------------------------- SONARQUBE ------------------------------ */
         stage('SonarQube Analysis') {
