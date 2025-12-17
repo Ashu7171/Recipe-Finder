@@ -59,9 +59,10 @@ spec:
     }
 
     environment {
+        VITE_API_KEY = credentials('SPOONACULAR_API_KEY')
         REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
         IMAGE    = "2401063/recipe-finder"
-        VERSION  = "v3"  // 🔥 UPDATE VERSION EACH DEPLOYMENT
+        VERSION  = "v4"  // 🔥 UPDATE VERSION EACH DEPLOYMENT
     }
 
     stages {
@@ -72,13 +73,12 @@ spec:
                 container('node') {
                     sh '''
                         echo "Injecting API Key for Vite build..."
-                        export VITE_API_KEY="cc61bff714d14ffe98913e198a562acf"
 
                         echo "Installing dependencies..."
                         npm install
 
                         echo "Building Vite project..."
-                        VITE_API_KEY=$VITE_API_KEY npm run build
+                        npm run build
 
                         echo "Audit fixes..."
                         npm audit fix || true
