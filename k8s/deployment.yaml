@@ -33,7 +33,7 @@ spec:
         - name: nexus-secret
       containers:
         - name: recipe-finder
-          image: 127.0.0.1:30085/2401063/recipe-finder:v3
+          image: 127.0.0.1:30085/2401063/recipe-finder:v4
           imagePullPolicy: Always
 
           ports:
