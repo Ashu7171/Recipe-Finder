@@ -149,7 +149,7 @@ spec:
                         echo "Applying deployment"
                         kubectl apply -f deployment.yaml -n 2401063
                         echo "Waiting for rollout"
-                        kubectl rollout status deployment/recipie-finder-deployment -n 2401063  
+                        kubectl rollout status deployment/recipe-finder-deployment -n 2401063  
                     """
                     }
                 }
