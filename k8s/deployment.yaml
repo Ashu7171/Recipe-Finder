@@ -48,14 +48,14 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
 
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /
               port: 80
             initialDelaySeconds: 20
             periodSeconds: 20
