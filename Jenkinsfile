@@ -144,12 +144,14 @@ spec:
         stage('Deploy to Kubernetes') {
             steps {
                 container('kubectl') {
-                    sh """
-                        echo "Updating Kubernetes deployment..."
-                        kubectl set image deployment/recipe-finder-deployment recipe-finder=$REGISTRY/$IMAGE:$VERSION -n 2401063
-
-                       
+                    dir('k8s'){
+                        sh """
+                        echo "Applying deployment"
+                        kubectl apply -f deployment.yaml -n 2401063
+                        echo "Waiting for rollout"
+                        kubectl rollout status deployment/recipie-finder-deployment -n 2401063  
                     """
+                    }
                 }
             }
         }
